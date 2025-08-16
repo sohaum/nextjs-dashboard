@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import postgres from 'postgres';
@@ -5,7 +6,7 @@ import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-export async function seedUsers() {
+async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   
   await sql`
@@ -31,7 +32,7 @@ export async function seedUsers() {
   return insertedUsers;
 }
 
-export async function seedInvoices() {
+async function seedInvoices() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   
   await sql`
@@ -57,7 +58,7 @@ export async function seedInvoices() {
   return insertedInvoices;
 }
 
-export async function seedCustomers() {
+async function seedCustomers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   
   await sql`
@@ -82,7 +83,7 @@ export async function seedCustomers() {
   return insertedCustomers;
 }
 
-export async function seedRevenue() {
+async function seedRevenue() {
   await sql`
     CREATE TABLE IF NOT EXISTS revenue (
       month VARCHAR(4) NOT NULL UNIQUE,
@@ -122,23 +123,15 @@ export async function GET() {
     });
 
     console.log('Database seeding completed successfully');
-    return Response.json({ message: 'Database seeded successfully' });
+    return NextResponse.json({ message: 'Database seeded successfully' });
   } catch (error) {
     console.error('Database seeding failed:', error);
     let message = "An unknown error occurred";
     if (error instanceof Error) {
       message = error.message;
     }
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   } finally {
     await sql.end();
   }
-}
-
-if (require.main === module) {
-  GET().then(() => {
-    console.log("Seeding finished");
-  }).catch((err) => {
-    console.error("Seeding failed:", err);
-  });
 }
