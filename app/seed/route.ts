@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
+import 'dotenv/config';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-async function seedUsers() {
+export async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+  
   await sql`
     CREATE TABLE IF NOT EXISTS users (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -29,9 +31,9 @@ async function seedUsers() {
   return insertedUsers;
 }
 
-async function seedInvoices() {
+export async function seedInvoices() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-
+  
   await sql`
     CREATE TABLE IF NOT EXISTS invoices (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -55,9 +57,9 @@ async function seedInvoices() {
   return insertedInvoices;
 }
 
-async function seedCustomers() {
+export async function seedCustomers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-
+  
   await sql`
     CREATE TABLE IF NOT EXISTS customers (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -80,7 +82,7 @@ async function seedCustomers() {
   return insertedCustomers;
 }
 
-async function seedRevenue() {
+export async function seedRevenue() {
   await sql`
     CREATE TABLE IF NOT EXISTS revenue (
       month VARCHAR(4) NOT NULL UNIQUE,
@@ -103,15 +105,40 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
-    const result = await sql.begin((sql) => [
-      seedUsers(),
-      seedCustomers(),
-      seedInvoices(),
-      seedRevenue(),
-    ]);
+    console.log('Starting database seeding...');
+    
+    await sql.begin(async (sql) => {
+      await seedUsers();
+      console.log('Users seeded');
+      
+      await seedCustomers();
+      console.log('Customers seeded');
+      
+      await seedInvoices();
+      console.log('Invoices seeded');
+      
+      await seedRevenue();
+      console.log('Revenue seeded');
+    });
 
+    console.log('Database seeding completed successfully');
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error('Database seeding failed:', error);
+    let message = "An unknown error occurred";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return Response.json({ error: message }, { status: 500 });
+  } finally {
+    await sql.end();
   }
+}
+
+if (require.main === module) {
+  GET().then(() => {
+    console.log("Seeding finished");
+  }).catch((err) => {
+    console.error("Seeding failed:", err);
+  });
 }
