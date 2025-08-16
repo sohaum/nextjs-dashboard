@@ -107,7 +107,7 @@ export async function GET() {
   try {
     console.log('Starting database seeding...');
     
-    await sql.begin(async (sql) => {
+    await sql.begin(async () => {
       await seedUsers();
       console.log('Users seeded');
       
