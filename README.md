@@ -5,9 +5,9 @@ This is the starter template for the Next.js App Router Course. It contains the 
 For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
 
 ## Framework & Core
--next@15.4.2-canary.50         # React-based framework for SSR, SSG, and API routes
--react@latest                  # UI library for building components
--react-dom@latest              # DOM bindings for React
+- next@15.4.2-canary.50         # React-based framework for SSR, SSG, and API routes
+- react@latest                  # UI library for building components
+- react-dom@latest              # DOM bindings for React
 
 ## Styling
 tailwindcss@3.4.17            # Utility-first CSS framework
