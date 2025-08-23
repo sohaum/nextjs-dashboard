@@ -1,6 +1,8 @@
 ## Next.js App Router Course - Starter
 
-This is the starter template for the Next.js App Router Course. It contains the starting code for the dashboard application.
+This is the starter template for the **Next.js App Router** Course. It contains the starting code for the dashboard application.
+
+A deep dive into the modern App Router introduced in Next.js 13+, using the new ```app/``` directory structure, layouts, server components, and more.
 
 For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
 
